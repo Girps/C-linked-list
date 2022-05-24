@@ -18,6 +18,10 @@ int get_Size(Node* cursor);
 Node* create_Node(int data_Param);
 void iteration(struct Node* ptr);
 void free_Nodes(Node **cursor); 
+void iteration(struct Node* ptr); 
+Node* reverse_Helper(struct Node** headptr, Node* cursor);
+void reverse(struct Node** ptr); 
+void printMenu(); 
 
 struct Node
 {
@@ -27,22 +31,82 @@ struct Node
 // Rename struct Node as Node 
  
 
-
-void iteration(struct Node* ptr); 
-
 int main()
 {
-    Node* head = create_Node(1); 
-    printf("Size of linked-list %d\n", get_Size(head)); 
-    if(get_Size(head) != 0)
+    // Pointer to first node in the list
+   struct Node** head = NULL; 
+   int desc = 0; 
+   do
+   {
+   printMenu(); 
+   // Ask for int input
+   scanf("%d",&desc); 
+    switch(desc)
     {
-        free_Nodes(&head); 
-    }
+        case(1) :   // add node
+                break; 
+        case(2):    // print list
+                break;
+        case(3):    // Reverse list
+                break; 
+        case(4):    // Remove node
+                break;
+        case(5):    // Clear list 
+                break; 
+        case(6):    // Exit program
+                desc = 6;  
+                printf("\nProgram terminated!\n"); 
+                break;
+        default: 
+                printf("\nError wrong input!\n");  
 
-    printf("Size of linked-list %d\n", get_Size(head)); 
+    }
+   }while(desc != 6 ); 
     return 0;
 }
 
+
+
+
+void printMenu()
+{
+    printf("\tPress a key for a selection\n");
+    printf("\t1)Add node\n\t2)Print list\n\t3)Reverse list\n\t4)Remove a node\n\t5)Clear list\n\t6)Exit program"); 
+}
+
+/* Void reverse, calls recrusive helper function and reassigns headpointer after recursive call */ 
+void reverse(struct Node** headptr)
+{
+    // Pointer pass is not null 
+    if( headptr != NULL && *headptr != NULL) 
+    {
+        reverse_Helper(headptr,*headptr); 
+        // Reassign head pointer
+    }
+}
+
+/* Node pointer returning reassigns pointers with each stack frame pop */
+Node* reverse_Helper(struct Node** headptr, struct Node* cursor)
+{
+    // Base case if next node is null return and assign head
+    if(cursor->next == NULL)
+    {
+        // Set next pointer of head to null 
+        (*headptr)->next = NULL; 
+        // Set new head 
+        *headptr = cursor; 
+        return cursor; 
+    }
+    else 
+    {
+        Node* prev = reverse_Helper(headptr,cursor->next); 
+        // have prevous node
+        prev->next = cursor; 
+        return cursor; 
+    }
+}
+
+/*Void function adds a node in the linked list and reassigns pointers */ 
 void add_Node(struct Node** headptr,int data_Param)
 {
     // If list is empty first node becomes the head
@@ -60,8 +124,6 @@ void add_Node(struct Node** headptr,int data_Param)
         *headptr = temp; 
     }
 }
-
-
 
 /*Int returning function iterates linked list and returns size of list */ 
 int get_Size(Node* cursor)
