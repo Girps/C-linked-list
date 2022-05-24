@@ -22,6 +22,9 @@ void iteration(struct Node* ptr);
 Node* reverse_Helper(struct Node** headptr, Node* cursor);
 void reverse(struct Node** ptr); 
 void printMenu(); 
+void askNode(struct Node** headptr);
+void remove_Node(int index,struct Node** head);
+void askRemove(struct Node** head); 
 
 struct Node
 {
@@ -34,44 +37,125 @@ struct Node
 int main()
 {
     // Pointer to first node in the list
-   struct Node** head = NULL; 
-   int desc = 0; 
+   Node* head;
+   head = NULL;
+   char desc = ' '; 
+   int sentienal = 0; 
+
    do
    {
    printMenu(); 
-   // Ask for int input
-   scanf("%d",&desc); 
-    switch(desc)
+   // Ask for char input
+   scanf(" %c",&desc);
+    // Caste to ascii code integer
+    switch((int)desc)
     {
-        case(1) :   // add node
+        case(49) :   // add node
+                    askNode(&head); 
                 break; 
-        case(2):    // print list
+        case(50):    // print list
+                    if(head != NULL)
+                    iteration(head);
+                    else 
+                    printf("\nEmpty list\n"); 
                 break;
-        case(3):    // Reverse list
+        case(51):    // Reverse list
+                    reverse(&head); 
                 break; 
-        case(4):    // Remove node
+        case(52):    // Free nodes 
+                    free_Nodes(&head);
                 break;
-        case(5):    // Clear list 
+        case(53):  // remove node indicated by index 
+                    if(get_Size(head) == 0)
+                    {
+                        printf("Can't remove node in empty list");
+                    } 
+                    else
+                    {
+                        askRemove(&head);
+                    } 
                 break; 
-        case(6):    // Exit program
-                desc = 6;  
+        case(54):  // Get size of the linked list 
+                    printf("\nList size: %d\n",get_Size(head)); 
+                break; 
+        case(55):    // Exit program
+                sentienal = 1;  
                 printf("\nProgram terminated!\n"); 
                 break;
-        default: 
+        default:    // Repeat loop 
                 printf("\nError wrong input!\n");  
 
+    }   // If not zero loop menu 
+   }while(sentienal == 0 ); 
+
+    // If head pointer is not NULL then free all nodes in linked list
+    if(head != NULL)
+    {
+        free_Nodes(head);
     }
-   }while(desc != 6 ); 
     return 0;
 }
 
+/*Void function asks user for integer input and removes node in that index*/ 
+void askRemove(struct Node** head)
+{
+    int index = 0;  
+    printf("Enter index between 0 and %d", get_Size(*head));
+    scanf(" %d",&index);
+    remove_Node(index,head);
 
+}
 
+void remove_Node(int index,struct Node** head)
+{
+    int count = index - 1; 
+     // Remove first node 
+    if(index ==  0)
+    {
+            Node* target = (*head)->next; 
+            free(*head); // free node
+            (*head) = target;  // assign pointer to next node
 
+    }   // if index is above first node
+    else if(index > 0 || (index <= (get_Size(*head) - 1)))
+    {
+        Node* cursor = *head; 
+        // Get node behind the targeted node
+            while(count > 0 )
+            {   
+                // traverse the list 
+                cursor = cursor->next; 
+                count--; 
+            }
+        // Point to targeted node 
+            struct Node* target = cursor->next; // Targeted node
+            int data = target->data;            // Get remove node data
+            cursor->next = target->next;         // have list point to next node on the list
+            free(target);                       
+            printf("Node [%d] removed from linked list",data); 
+    }
+    else
+    {
+        printf("\nindex %d is out of range did not remove node.\n",index); 
+    }
+}
+
+/*Void function ask user for int data to add into linked list */ 
+void askNode(struct Node** headptr)
+{
+    printf("\nEnter an integer to be added to linked list");
+    int data = 0; 
+    scanf(" %d",&data);               // takes in one character  
+    add_Node(headptr,data);    // type cast data into an integer  
+    printf("[ %d] added",data); // print data added into node
+
+}
+
+/*Void function prints output for instructions*/
 void printMenu()
 {
     printf("\tPress a key for a selection\n");
-    printf("\t1)Add node\n\t2)Print list\n\t3)Reverse list\n\t4)Remove a node\n\t5)Clear list\n\t6)Exit program"); 
+    printf("\t1)Add node\n\t2)Print list\n\t3)Reverse list\n\t4)Clear linked list\n\t5)Remove a node\n\t6)Linked list size\n\t7)Exit program\n"); 
 }
 
 /* Void reverse, calls recrusive helper function and reassigns headpointer after recursive call */ 
@@ -110,7 +194,7 @@ Node* reverse_Helper(struct Node** headptr, struct Node* cursor)
 void add_Node(struct Node** headptr,int data_Param)
 {
     // If list is empty first node becomes the head
-    if(headptr == NULL)
+    if(*headptr == NULL)
     {
         // Create node assign it to head
         *headptr = create_Node(data_Param); 
